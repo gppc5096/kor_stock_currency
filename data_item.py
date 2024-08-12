@@ -2,8 +2,9 @@ import sys
 import os
 import pandas as pd
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QDateEdit, QComboBox, QPushButton,
-                             QGridLayout, QVBoxLayout, QHBoxLayout, QMessageBox, QTableWidget, QTableWidgetItem)
+                             QGridLayout, QVBoxLayout, QHBoxLayout, QMessageBox, QTableWidget, QTableWidgetItem, QGroupBox, QHeaderView)
 from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtGui import QFont, QColor
 
 
 class StockManagementApp(QWidget):
@@ -12,91 +13,157 @@ class StockManagementApp(QWidget):
 
         # 최초 프로그램 실행 시 'data_list.xlsx' 파일 생성
         self.initialize_excel_file()
-        
+
         # 창 제목 설정
         self.setWindowTitle('주식 매수 관리')
 
-        # 그리드 레이아웃 생성
-        grid = QGridLayout()
+        # 창 배경색과 폰트 컬러 설정
+        self.setStyleSheet("background-color: #4a5569; color: white;")
+
+        # 폰트 설정
+        label_font = QFont("맑은 고딕", weight=QFont.Bold)
+
+        # 첫 번째 섹션 (입력 폼과 버튼)
+        first_section = QGroupBox('First Section')
+        first_section.setStyleSheet(
+            "QGroupBox { font: bold 12pt '맑은 고딕'; color: white; }")
+        first_section_layout = QGridLayout()
 
         # 첫 번째 줄 항목
-        grid.addWidget(QLabel('거래일자'), 0, 0)
+        trade_date_label = QLabel('거래일자')
+        trade_date_label.setFont(label_font)
+        first_section_layout.addWidget(trade_date_label, 0, 0)
+
         self.trade_date = QDateEdit(self)
         self.trade_date.setCalendarPopup(True)
         self.trade_date.setDisplayFormat("yyyy-MM-dd")  # 날짜 형식 지정
         self.trade_date.setDate(QDate.currentDate())  # 현재 날짜로 설정
-        grid.addWidget(self.trade_date, 0, 1)
+        first_section_layout.addWidget(self.trade_date, 0, 1)
 
-        grid.addWidget(QLabel('국가'), 0, 2)
+        country_label = QLabel('국가')
+        country_label.setFont(label_font)
+        first_section_layout.addWidget(country_label, 0, 2)
+
         self.country = QComboBox(self)
         self.country.addItems(['대한민국', '미국', '일본', '중국'])  # 필요에 따라 항목 추가
-        grid.addWidget(self.country, 0, 3)
+        self.country.currentTextChanged.connect(
+            self.update_currency_mode)  # 국가 변경 시 편집 모드 갱신
+        first_section_layout.addWidget(self.country, 0, 3)
 
-        grid.addWidget(QLabel('증권사'), 0, 4)
+        broker_label = QLabel('증권사')
+        broker_label.setFont(label_font)
+        first_section_layout.addWidget(broker_label, 0, 4)
+
         self.broker = QComboBox(self)
         self.broker.addItems(['삼성증권', '미래에셋', '키움증권'])  # 필요에 따라 항목 추가
-        grid.addWidget(self.broker, 0, 5)
+        first_section_layout.addWidget(self.broker, 0, 5)
 
-        grid.addWidget(QLabel('계좌번호'), 0, 6)
+        account_number_label = QLabel('계좌번호')
+        account_number_label.setFont(label_font)
+        first_section_layout.addWidget(account_number_label, 0, 6)
+
         self.account_number = QComboBox(self)
         self.account_number.addItems(
             ['123-456-789', '987-654-321', '555-666-777'])  # 예시 항목
-        grid.addWidget(self.account_number, 0, 7)
+        first_section_layout.addWidget(self.account_number, 0, 7)
 
-        grid.addWidget(QLabel('종목명'), 0, 8)
+        stock_name_label = QLabel('종목명')
+        stock_name_label.setFont(label_font)
+        first_section_layout.addWidget(stock_name_label, 0, 8)
+
         self.stock_name = QComboBox(self)
         self.stock_name.addItems(['삼성전자', '애플', '테슬라'])  # 예시 항목
-        grid.addWidget(self.stock_name, 0, 9)
+        first_section_layout.addWidget(self.stock_name, 0, 9)
 
         # 두 번째 줄 항목
-        grid.addWidget(QLabel('틱커명'), 1, 0)
+        ticker_label = QLabel('틱커명')
+        ticker_label.setFont(label_font)
+        first_section_layout.addWidget(ticker_label, 1, 0)
+
         self.ticker = QComboBox(self)
         self.ticker.addItems(['005930', 'AAPL', 'TSLA'])  # 예시 항목
-        grid.addWidget(self.ticker, 1, 1)
+        first_section_layout.addWidget(self.ticker, 1, 1)
 
-        grid.addWidget(QLabel('매수단가'), 1, 2)
+        purchase_price_label = QLabel('매수단가')
+        purchase_price_label.setFont(label_font)
+        first_section_layout.addWidget(purchase_price_label, 1, 2)
+
         self.purchase_price = QLineEdit(self)
-        grid.addWidget(self.purchase_price, 1, 3)
+        self.purchase_price.returnPressed.connect(
+            self.move_to_quantity)  # 엔터 누르면 다음 항목으로 이동
+        self.purchase_price.textChanged.connect(self.calculate_amount)
+        first_section_layout.addWidget(self.purchase_price, 1, 3)
 
-        grid.addWidget(QLabel('매수수량'), 1, 4)
+        purchase_quantity_label = QLabel('매수수량')
+        purchase_quantity_label.setFont(label_font)
+        first_section_layout.addWidget(purchase_quantity_label, 1, 4)
+
         self.purchase_quantity = QLineEdit(self)
-        grid.addWidget(self.purchase_quantity, 1, 5)
+        self.purchase_quantity.textChanged.connect(self.calculate_amount)
+        first_section_layout.addWidget(self.purchase_quantity, 1, 5)
 
-        grid.addWidget(QLabel('달러매수금'), 1, 6)
+        purchase_amount_usd_label = QLabel('달러매수금')
+        purchase_amount_usd_label.setFont(label_font)
+        first_section_layout.addWidget(purchase_amount_usd_label, 1, 6)
+
         self.purchase_amount_usd = QLineEdit(self)
-        grid.addWidget(self.purchase_amount_usd, 1, 7)
+        first_section_layout.addWidget(self.purchase_amount_usd, 1, 7)
 
-        grid.addWidget(QLabel('원화매수금'), 1, 8)
+        purchase_amount_krw_label = QLabel('원화매수금')
+        purchase_amount_krw_label.setFont(label_font)
+        first_section_layout.addWidget(purchase_amount_krw_label, 1, 8)
+
         self.purchase_amount_krw = QLineEdit(self)
-        grid.addWidget(self.purchase_amount_krw, 1, 9)
+        first_section_layout.addWidget(self.purchase_amount_krw, 1, 9)
 
         # 세 번째 줄 버튼들
         btn_layout = QHBoxLayout()
 
+        button_style = """
+        QPushButton {
+            background-color: #2c333e;
+            color: white;
+            font: bold "맑은 고딕";
+        }
+        QPushButton:pressed {
+            background-color: #1c1f26;
+        }
+        """
+
         self.add_button = QPushButton('추가', self)
         self.add_button.setFixedSize(170, 25)
+        self.add_button.setStyleSheet(button_style)
         self.add_button.clicked.connect(self.add_entry)  # 버튼 클릭 시 데이터 추가
         btn_layout.addWidget(self.add_button)
 
         self.update_button = QPushButton('수정', self)
         self.update_button.setFixedSize(170, 25)
+        self.update_button.setStyleSheet(button_style)
         self.update_button.clicked.connect(self.update_entry)  # 버튼 클릭 시 데이터 수정
         btn_layout.addWidget(self.update_button)
 
         self.delete_button = QPushButton('삭제', self)
         self.delete_button.setFixedSize(170, 25)
+        self.delete_button.setStyleSheet(button_style)
         self.delete_button.clicked.connect(self.delete_entry)  # 버튼 클릭 시 데이터 삭제
         btn_layout.addWidget(self.delete_button)
 
         self.reset_button = QPushButton('초기화', self)
         self.reset_button.setFixedSize(170, 25)
+        self.reset_button.setStyleSheet(button_style)
         self.reset_button.clicked.connect(self.reset_form)  # 초기화 버튼 기능
         btn_layout.addWidget(self.reset_button)
 
-        # 최종 레이아웃 구성
-        layout = QVBoxLayout()
-        layout.addLayout(grid)
-        layout.addLayout(btn_layout)
+        # 첫 번째 섹션에 버튼 레이아웃 추가
+        first_section_layout.addLayout(btn_layout, 2, 0, 1, 10)
+
+        first_section.setLayout(first_section_layout)
+
+        # 두 번째 섹션 (테이블 리스트)
+        second_section = QGroupBox('Second Section')
+        second_section.setStyleSheet(
+            "QGroupBox { font: bold 12pt '맑은 고딕'; color: white; }")
+        second_section_layout = QVBoxLayout()
 
         # 테이블 생성
         self.table = QTableWidget()
@@ -105,16 +172,38 @@ class StockManagementApp(QWidget):
                                               '틱커명', '매수단가', '매수수량', '달러매수금', '원화매수금'])
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.cellClicked.connect(self.load_entry)  # 행 선택 시 데이터 불러오기
-        layout.addWidget(self.table)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # 열 크기 조정
+        second_section_layout.addWidget(self.table)
 
-        self.setLayout(layout)
+        # 테이블 헤더 스타일 설정
+        header = self.table.horizontalHeader()
+        header.setStyleSheet("""
+        QHeaderView::section {
+            background-color: #2c333e;
+            color: white;
+            font: bold "맑은 고딕";
+        }
+        """)
+
+        second_section.setLayout(second_section_layout)
+
+        # 전체 레이아웃 설정
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(first_section)
+        main_layout.addWidget(second_section)
+
+        self.setLayout(main_layout)
 
         # 창 크기 조정 및 화면 중앙 배치
-        self.resize(1000, 400)
+        self.resize(850, 850)
+        self.setMinimumSize(600, 600)  # 최소 창 크기 설정
         self.center()
 
         # 초기 데이터 로드
         self.load_data()
+
+        # 초기 상태 설정
+        self.update_currency_mode()
 
     def center(self):
         qr = self.frameGeometry()
@@ -147,10 +236,10 @@ class StockManagementApp(QWidget):
             '계좌번호': self.account_number.currentText(),
             '종목명': self.stock_name.currentText(),
             '틱커명': self.ticker.currentText(),
-            '매수단가': self.purchase_price.text(),
-            '매수수량': self.purchase_quantity.text(),
-            '달러매수금': self.purchase_amount_usd.text(),
-            '원화매수금': self.purchase_amount_krw.text(),
+            '매수단가': self.purchase_price.text().replace(',', ''),
+            '매수수량': self.purchase_quantity.text().replace(',', ''),
+            '달러매수금': self.format_currency(self.purchase_amount_usd.text(), "$"),
+            '원화매수금': self.format_currency(self.purchase_amount_krw.text(), "₩"),
         }
 
         # 테이블에 데이터 추가
@@ -182,13 +271,13 @@ class StockManagementApp(QWidget):
             self.table.setItem(row, 5, QTableWidgetItem(
                 self.ticker.currentText()))
             self.table.setItem(row, 6, QTableWidgetItem(
-                self.purchase_price.text()))
+                self.purchase_price.text().replace(',', '')))
             self.table.setItem(row, 7, QTableWidgetItem(
-                self.purchase_quantity.text()))
+                self.purchase_quantity.text().replace(',', '')))
             self.table.setItem(row, 8, QTableWidgetItem(
-                self.purchase_amount_usd.text()))
+                self.format_currency(self.purchase_amount_usd.text(), "$")))
             self.table.setItem(row, 9, QTableWidgetItem(
-                self.purchase_amount_krw.text()))
+                self.format_currency(self.purchase_amount_krw.text(), "₩")))
 
             # 엑셀 파일에 저장
             self.save_to_excel()
@@ -219,10 +308,15 @@ class StockManagementApp(QWidget):
         self.account_number.setCurrentText(self.table.item(row, 3).text())
         self.stock_name.setCurrentText(self.table.item(row, 4).text())
         self.ticker.setCurrentText(self.table.item(row, 5).text())
-        self.purchase_price.setText(self.table.item(row, 6).text())
-        self.purchase_quantity.setText(self.table.item(row, 7).text())
-        self.purchase_amount_usd.setText(self.table.item(row, 8).text())
-        self.purchase_amount_krw.setText(self.table.item(row, 9).text())
+        self.purchase_price.setText(
+            self.format_for_display(self.table.item(row, 6).text()))
+        self.purchase_quantity.setText(
+            self.format_for_display(self.table.item(row, 7).text()))
+        self.purchase_amount_usd.setText(self.table.item(
+            row, 8).text().replace("$", "").replace(",", ""))
+        self.purchase_amount_krw.setText(self.table.item(
+            row, 9).text().replace("₩", "").replace(",", ""))
+        self.update_currency_mode()
 
     def save_to_excel(self):
         file_path = 'data_list.xlsx'
@@ -243,6 +337,45 @@ class StockManagementApp(QWidget):
         self.purchase_quantity.clear()
         self.purchase_amount_usd.clear()
         self.purchase_amount_krw.clear()
+
+    def move_to_quantity(self):
+        self.purchase_quantity.setFocus()
+
+    def format_number(self, line_edit):
+        text = line_edit.text().replace(',', '')  # 기존 콤마 제거
+        if text.isdigit():
+            formatted_text = "{:,}".format(int(text))  # 천 단위로 콤마 추가
+            line_edit.setText(formatted_text)
+
+    def format_for_display(self, value):
+        return "{:,}".format(int(value)) if value.isdigit() else value
+
+    def format_currency(self, value, symbol):
+        if value.isdigit():
+            return f"{symbol}{int(value):,}"
+        return value
+
+    def update_currency_mode(self):
+        if self.country.currentText() == "대한민국":
+            self.purchase_amount_usd.setReadOnly(True)
+            self.purchase_amount_krw.setReadOnly(False)
+            self.purchase_amount_usd.clear()
+        else:
+            self.purchase_amount_krw.setReadOnly(True)
+            self.purchase_amount_usd.setReadOnly(False)
+            self.purchase_amount_krw.clear()
+
+    def calculate_amount(self):
+        try:
+            price = int(self.purchase_price.text().replace(',', ''))
+            quantity = int(self.purchase_quantity.text().replace(',', ''))
+            amount = price * quantity
+            if self.country.currentText() == "대한민국":
+                self.purchase_amount_krw.setText("{:,}".format(amount))
+            else:
+                self.purchase_amount_usd.setText("{:,}".format(amount))
+        except ValueError:
+            pass
 
 
 if __name__ == '__main__':
