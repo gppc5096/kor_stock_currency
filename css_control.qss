@@ -1,57 +1,69 @@
-/* 기본 윈도우 스타일 */
-QWidget {
-    background-color: #f0f0f0;
-    font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
-    font-size: 14px;
-}
+    QLabel {
+        font-family: '맑은 고딕';
+        font-weight: bold;
+    }
 
-/* QLabel 스타일 */
-QLabel {
-    color: #333333;
-}
+    #titleLabel {
+        background-color: #000000;
+        color: white;
+        font-size: 18px;
+        padding: 10px;
+        text-align: center;
+    }
 
-/* QLineEdit 스타일 */
-QLineEdit {
-    padding: 5px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-}
+    QPushButton {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+    }
 
-/* QPushButton 스타일 */
-QPushButton {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-}
+    QPushButton:hover {
+        background-color: #45a049;
+    }
 
-QPushButton:hover {
-    background-color: #45a049;
-}
+    QTableWidget::item:selected {
+        background-color: #4CAF50;
+        color: white;
+    }
 
-/* QTableWidget 스타일 */
-QTableWidget {
-    background-color: #ffffff;
-    font-size: 14px;
-    border: 1px solid #cccccc;
-}
+    QHeaderView::section {
+        background-color: lightgray;
+        font-weight: bold;
+    }
 
-QTableWidget::item {
-    padding: 5px;
-}
+    #bottomBox {
+        background-color: #c3c1c5;
+        font-style: italic;
+        padding: 5px;
+        font-size: 14px;
+    }
 
-QTableWidget::item:selected {
-    background-color: #4CAF50;
-    color: white;
-}
+    #totalViewTitle, #totalViewContent, #totalSummaryLabel {
+        font-family: '맑은 고딕';
+        font-size: 15pt;
+        border: 1px solid grey;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
 
-/* QPushButton 삭제 스타일 */
-QPushButton#delete_button {
-    background-color: #f44336;
-}
+    #totalViewTitle {
+        color: #333333;
+        font-size: 10pt;
+        background-color: #e6e6e6;
+    }
 
-QPushButton#delete_button:hover {
-    background-color: #d32f2f;
-}
+    #totalViewContent {
+        color: #555555;
+        font-size: 9pt;
+        background-color: #ffffff;
+    }
+
+    #totalSummaryLabel {
+        color: #111111;
+        font-size: 9pt;
+        background-color: #e6e6e6;
+    }
