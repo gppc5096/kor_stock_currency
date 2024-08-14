@@ -17,7 +17,7 @@ class StockEntrySystem(QWidget):
 
     # GUI 초기화
     def init_ui(self):
-        self.setWindowTitle('주식 데이터 입력 시스템')
+        self.setWindowTitle('주식관리프로그램')
         self.setGeometry(100, 100, 1000, 700)  # 전체 창 크기 (세로 700으로 조정)
 
         # 모니터 중앙에 창 배치
@@ -31,7 +31,7 @@ class StockEntrySystem(QWidget):
         self.setLayout(main_layout)
 
         # 주식 데이터 입력 시스템 섹션 라벨
-        title_label = QLabel('주식 데이터 입력 시스템')
+        title_label = QLabel('나서현주식관리프로그램')
         title_label.setObjectName('titleLabel')  # QSS에서 스타일을 지정하기 위한 ID 설정
         main_layout.addWidget(title_label)
 
@@ -509,7 +509,7 @@ if __name__ == '__main__':
 
     #totalViewTitle, #totalViewContent {
         font-family: '맑은 고딕';
-        font-size: 10pt;
+        font-size: 9pt;
         border: 1px solid grey;
         border-radius: 5px;
         padding: 10px;
@@ -524,18 +524,18 @@ if __name__ == '__main__':
 
     #totalViewContent {
         color: #555555;
-        font-size: 10pt;
+        font-size: 9pt;
         background-color: #ffffff;
     }
 
     #tickerLabel {
-        font-size: 10pt;
+        font-size: 9pt;
         color: #333333;
         padding: 5px;
     }
 
     #totalSummaryLabel {
-        font-size: 10pt;
+        font-size: 9pt;
         color: #111111;
         padding: 10px;
     }
