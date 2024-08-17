@@ -1,3 +1,23 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!*.py
+!*.md
+!*.txt
+!*.json
+!*.qss
+!*.spec
+!*.ini
+# etc...
+
+# ...even if they are in subdirectories
+!*/
+
+# if the files to be tracked are in subdirectories
+!*/filename.ext
+
 venv/
 __pycache__/
 *.pyc
