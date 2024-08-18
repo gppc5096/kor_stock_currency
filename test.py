@@ -5,30 +5,6 @@ import yfinance as yf
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem, QHBoxLayout, QGridLayout, QHeaderView
 from PyQt5.QtCore import Qt
 
-
-def resource_path(relative_path):
-    """PyInstaller로 패키징된 실행 파일에서 리소스를 올바르게 찾기 위한 함수"""
-    try:
-        # PyInstaller가 사용하는 임시 폴더로부터 리소스를 가져옵니다.
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-
-def copy_resource_files():
-    """QSS 및 JSON 파일을 실행 파일과 동일한 폴더로 복사하는 함수"""
-    files_to_copy = ["style.qss", "stock_data.json"]
-    exec_dir = os.path.dirname(os.path.abspath(
-        sys.executable))  # 실행 파일의 실제 디렉토리
-
-    for file in files_to_copy:
-        source = resource_path(file)
-        destination = os.path.join(exec_dir, file)
-        if not os.path.exists(destination):
-            shutil.copyfile(source, destination)
-
 # 현재 경로 설정
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # QSS 파일 경로
@@ -293,6 +269,66 @@ class StockApp(QWidget):
         self.price_1yr_input.clear()
         self.price_6mo_input.clear()
         self.current_price_input.clear()
+
+
+# QSS 파일 내용
+QSS_CONTENT = """
+QWidget {
+    font-family: '맑은 고딕';
+    font-size: 9pt;
+    background-color: #F0F0F0;
+}
+QLabel {
+    font-size: 10pt;
+    color: #333333;
+    padding: 2px;
+}
+QLineEdit {
+    padding: 5px;
+    border: 1px solid #C0C0C0;
+    border-radius: 3px;
+    font-size: 9pt;
+    color: #000000;
+}
+QPushButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+    font-size: 9pt;
+}
+QPushButton:hover {
+    background-color: #45a049;
+}
+QHeaderView::section {
+    background-color: #D3D3D3;
+    padding: 4px;
+    border: 1px solid #C0C0C0;
+    font-size: 10pt;
+    color: #333333;
+    text-align: center;
+}
+QTableWidget {
+    gridline-color: #C0C0C0;
+    background-color: white;
+    font-size: 9pt;
+    color: #000000;
+}
+QTableWidgetItem {
+    padding: 5px;
+}
+"""
+
+# JSON 파일 초기 내용 (빈 리스트로 시작)
+JSON_CONTENT = "[]"
+
+
+def create_file_if_not_exists(file_path, content):
+    """파일이 없을 경우 생성하는 함수"""
+    if not os.path.exists(file_path):
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
 
 
 if __name__ == '__main__':

@@ -158,8 +158,13 @@ class StockApp(QWidget):
 
     def apply_stylesheet(self):
         """QSS 스타일 시트를 적용하는 함수"""
-        with open(qss_path, "r", encoding="utf-8") as file:
-            self.setStyleSheet(file.read())
+        try:
+            with open(qss_path, "r", encoding="utf-8") as file:
+                self.setStyleSheet(file.read())
+        except FileNotFoundError:
+            print(f"QSS 파일을 찾을 수 없습니다: {qss_path}")
+            # 필요시 예외 처리 추가 (기본 스타일을 설정하거나, 경고 메시지를 표시)
+
 
     def load_stock_data(self):
         """틱커명을 입력하면 종목명과 가격 데이터를 로드하는 함수"""
