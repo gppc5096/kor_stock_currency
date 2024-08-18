@@ -1,0 +1,68 @@
+/* 전체 코드 텍스트를 '맑은 고딕' 9pt로 설정 */
+QWidget {
+    font-family: '맑은 고딕';
+    font-size: 9pt;
+    background-color: #F0F0F0;
+}
+
+/* 입력 필드의 필드명 스타일 */
+QLabel {
+    font-size: 10pt;  /* 필드명 폰트 사이즈 */
+    color: #333333;   /* 필드명 글자 색 */
+    padding: 2px;
+}
+
+/* 입력 필드 스타일 */
+QLineEdit {
+    padding: 5px;
+    border: 1px solid #C0C0C0;
+    border-radius: 3px;
+    font-size: 9pt;
+    color: #000000;   /* 입력 필드 텍스트 색상 */
+}
+
+/* 버튼 스타일 */
+QPushButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+    font-size: 9pt;
+}
+
+QPushButton:hover {
+    background-color: #45a049;
+}
+
+/* 테이블 헤더 스타일 */
+QHeaderView::section {
+    background-color: #D3D3D3;
+    padding: 4px;
+    border: 1px solid #C0C0C0;
+    font-size: 10pt;   /* 헤더 폰트 사이즈 */
+    color: #333333;    /* 헤더 텍스트 색상 */
+    text-align: center; /* 헤더 텍스트 정렬 */
+}
+
+/* 테이블 셀 스타일 */
+QTableWidget {
+    gridline-color: #C0C0C0;
+    background-color: white;
+    font-size: 9pt;
+    color: #000000;   /* 셀 텍스트 색상 */
+}
+
+QTableWidgetItem {
+    padding: 5px;
+}
+
+/* 틱커명(첫 번째 열) 셀 텍스트 중앙 정렬 */
+QTableWidget::item {
+    text-align: center;
+}
+
+/* 가격 데이터(세 번째, 네 번째, 다섯 번째 열) 셀 텍스트 오른쪽 정렬 */
+QTableWidget::item[align-right] {
+    text-align: right;
+}
