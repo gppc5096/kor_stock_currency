@@ -5,12 +5,35 @@ import yfinance as yf
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem, QHBoxLayout, QGridLayout, QHeaderView
 from PyQt5.QtCore import Qt
 
+
+def resource_path(relative_path):
+    """PyInstaller로 패키징된 실행 파일에서 리소스를 올바르게 찾기 위한 함수"""
+    try:
+        # PyInstaller가 사용하는 임시 폴더로부터 리소스를 가져옵니다.
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+def copy_resource_files():
+    """QSS 및 JSON 파일을 실행 파일과 동일한 폴더로 복사하는 함수"""
+    files_to_copy = ["style.qss", "stock_data.json"]
+    exec_dir = os.path.dirname(os.path.abspath(
+        sys.executable))  # 실행 파일의 실제 디렉토리
+
+    for file in files_to_copy:
+        source = resource_path(file)
+        destination = os.path.join(exec_dir, file)
+        if not os.path.exists(destination):
+            shutil.copyfile(source, destination)
+
+
 # 현재 경로 설정
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
 # QSS 파일 경로
 qss_path = os.path.join(current_dir, "style.qss")
-
 # JSON 파일 경로
 json_path = os.path.join(current_dir, "stock_data.json")
 
